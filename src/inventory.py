@@ -16,7 +16,7 @@ from __future__ import annotations
 import json
 from collections import Counter
 from dataclasses import dataclass, field, asdict
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Iterable
 
@@ -27,6 +27,7 @@ class SessionStats:
     session_id: str = ""
     user_dir: str = ""
     cwd: str = ""
+    is_subagent: bool = False
     n_lines: int = 0
     n_skipped_lines: int = 0
     n_user_turns: int = 0          # human-typed turns (content is str OR has any non-tool_result block)
@@ -42,8 +43,26 @@ class SessionStats:
     n_text_chars_assistant: int = 0
 
 
-def _parse_ts(s: str) -> datetime | None:
-    if not s:
+def _parse_ts(s) -> datetime | None:
+    """Parse a trace timestamp. Accepts ISO-8601 strings (Claude Code's usual
+    format) and numeric epoch values (seconds or milliseconds), which some
+    lines in the hackathon archive use instead."""
+    if s is None or s == "":
+        return None
+    if isinstance(s, bool):
+        return None
+    if isinstance(s, (int, float)):
+        try:
+            val = float(s)
+        except (ValueError, TypeError):
+            return None
+        if val > 1e11:  # milliseconds since epoch
+            val /= 1000.0
+        try:
+            return datetime.fromtimestamp(val, tz=timezone.utc)
+        except (ValueError, OSError, OverflowError):
+            return None
+    if not isinstance(s, str):
         return None
     try:
         return datetime.fromisoformat(s.replace("Z", "+00:00"))
@@ -124,9 +143,23 @@ def inventory_session(path: Path) -> SessionStats:
     if first_user_ts and first_tool_ts:
         s.time_to_first_tool_s = (first_tool_ts - first_user_ts).total_seconds()
 
-    # Best-effort user_dir: the parent directory of the session file (matches
-    # Claude Code's ~/.claude/projects/<encoded-cwd>/<session-uuid>.jsonl layout)
+    # user_dir: the hackathon archive nests traces as
+    #   .../claude-_files/<username>/.claude/projects/<encoded-cwd>/<session>.jsonl
+    # so the username is the path component right after the "claude-_files" anchor.
+    # Fall back to the immediate parent dir name (Claude Code's default layout,
+    # where parent == <encoded-cwd>) if the anchor isn't present.
+    parts = path.parts
     s.user_dir = path.parent.name
+    for anchor in ("claude-_files", "claudefiles", "claude_files"):
+        if anchor in parts:
+            i = parts.index(anchor)
+            if i + 1 < len(parts):
+                s.user_dir = parts[i + 1]
+            break
+
+    # Subagent traces live at .../<session-uuid>/subagents/agent-*.jsonl and are
+    # not standalone sessions; flag them so the per-session counts stay honest.
+    s.is_subagent = "subagents" in parts or path.name.startswith("agent-")
     return s
 
 

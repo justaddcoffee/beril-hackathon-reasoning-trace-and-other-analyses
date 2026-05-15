@@ -53,6 +53,19 @@ def _content_blocks(msg: dict) -> list[dict]:
     return []
 
 
+def _oneline(s: str, limit: int = 500) -> str:
+    """Collapse all whitespace (incl. newlines) to single spaces, then truncate.
+
+    The last_user/last_assistant snippets are frequently multi-line markdown.
+    Left as-is they embed newlines inside quoted CSV fields - still valid CSV,
+    but the file shows as a wall of markdown in any viewer that doesn't parse
+    quoting. Flattening keeps the triage CSV to one physical line per row so
+    it stays scannable. Collapse happens before truncation so the limit counts
+    real content, not whitespace.
+    """
+    return " ".join((s or "").split())[:limit]
+
+
 def _write_chars(tool_name: str, tool_input: dict) -> int:
     """Approximate count of characters written by this tool call."""
     if not isinstance(tool_input, dict):
@@ -129,8 +142,8 @@ def outcome_for_session(path: Path) -> SessionOutcome:
                             o.total_write_chars += _write_chars(name, tin)
 
     o.n_files_written = len(o.files_written)
-    o.last_user_text = last_user[:500]
-    o.last_assistant_text = last_assistant[:500]
+    o.last_user_text = _oneline(last_user)
+    o.last_assistant_text = _oneline(last_assistant)
     return o
 
 
