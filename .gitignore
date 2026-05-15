@@ -6,3 +6,11 @@ __pycache__/
 .venv/
 .env
 .DS_Store
+# local Claude Code settings
+.claude/
+# Working files for the human labeling pass. These contain trace-content
+# snippets and per-session usernames; not safe to push before the consent
+# filter is applied (Ben opted out, Nik Chia did not reply). Sanitized
+# outputs (notes/99_writeup.md, etc.) can be published.
+notes/01_inventory.csv
+notes/02_outcomes_to_label.csv

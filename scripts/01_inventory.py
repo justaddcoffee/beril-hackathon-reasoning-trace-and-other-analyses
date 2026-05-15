@@ -68,31 +68,38 @@ def main() -> int:
         writer.writeheader()
         writer.writerows(records)
 
-    print(f"\nwrote {out} ({len(records)} sessions)\n")
+    print(f"\nwrote {out} ({len(records)} jsonl files)\n")
+
+    # Subagent traces (.../subagents/agent-*.jsonl) are kept in the CSV but are
+    # not standalone sessions, so the shape summary below is computed on the
+    # main sessions only.
+    main = [s for s in sessions if not s.is_subagent]
+    subagents = [s for s in sessions if s.is_subagent]
 
     # ---- shape summary ----
-    print(f"sessions: {len(sessions)}")
-    print(f"users (distinct user_dir): {len({s.user_dir for s in sessions})}")
+    print(f"jsonl files: {len(sessions)}  ({len(main)} main sessions, "
+          f"{len(subagents)} subagent traces)")
+    print(f"users (distinct user_dir): {len({s.user_dir for s in main})}")
     print(f"sessions per user (top 10):")
-    per_user = Counter(s.user_dir for s in sessions)
+    per_user = Counter(s.user_dir for s in main)
     for u, n in per_user.most_common(10):
         print(f"  {n:4d}  {u}")
 
     print("\nturns/session:")
-    print(histogram([s.n_user_turns + s.n_assistant_turns for s in sessions]))
+    print(histogram([s.n_user_turns + s.n_assistant_turns for s in main]))
 
     print("\ntool calls/session:")
-    print(histogram([s.n_tool_calls for s in sessions]))
+    print(histogram([s.n_tool_calls for s in main]))
 
     print("\nduration (min)/session:")
-    print(histogram([s.duration_min for s in sessions]))
+    print(histogram([s.duration_min for s in main]))
 
     print("\ntime-to-first-tool (s):")
-    print(histogram([s.time_to_first_tool_s for s in sessions]))
+    print(histogram([s.time_to_first_tool_s for s in main]))
 
-    print("\ntop tools across all sessions:")
+    print("\ntop tools across all main sessions:")
     all_tools: Counter = Counter()
-    for s in sessions:
+    for s in main:
         all_tools.update(s.tools)
     for tool, n in all_tools.most_common(20):
         print(f"  {n:6d}  {tool}")

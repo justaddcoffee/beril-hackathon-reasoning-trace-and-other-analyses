@@ -153,9 +153,9 @@ viewer/      Chris's bw.html or other viewers
 - [x] Step-1 inventory parser + runner
 - [x] Step-2 outcome-triage parser + runner
 - [x] Smoke-tested both against local Claude Code session dirs (same JSONL format)
-- [ ] Pull `claudefiles.zip` from BERDL
-- [ ] Step 1 on BERIL data
-- [ ] Step 2 labeling
+- [x] Pull `claudefiles.zip` from BERDL (it's a gzipped tar, not a zip - 2291 jsonl, 80 users)
+- [x] Step 1 on BERIL data -> `notes/01_inventory.csv`
+- [ ] Step 2 labeling (`notes/02_outcomes_to_label.csv` generated; `label` column still empty)
 - [ ] Step 3 narratives
 - [ ] Step 4 coding scheme
 - [ ] Step 5 coding pass
