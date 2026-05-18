@@ -13,7 +13,7 @@ Qualitative ("vibe") analysis of the Claude Code reasoning traces collected duri
 | What | Where |
 |---|---|
 | Raw participant traces | BERDL hub `/global_share/gazimahmud/claudefiles.zip` |
-| Consent tracking | [Google Sheet, Consent tab gid=1121416091](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit?gid=1121416091#gid=1121416091) |
+| Consent tracking | [Google Sheet, "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit) - has a consent column. (There is NO tab called "Consent" - the invite list is the source of truth.) |
 | Zoom recording / chat / transcript | [Drive folder](https://drive.google.com/drive/folders/1x5yI3orSlHwRqYvsIl2UbOQV6FOE0Tzx) |
 | Chris's prototype trace browser | `~/gtd/tmp/beril-traces/bw.html` |
 | KBase Lakehouse evaluation tenant | (Elisha set up; you were being added 5/11) |
@@ -43,7 +43,8 @@ If the zip layout is different from `~/.claude/projects/<encoded-cwd>/<session>.
 ### Step 0 - Consent setup (one-time, ~10 min)
 
 Before any cross-user aggregation, generate the consent table and fill it
-in from the [Google Sheet](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit?gid=1121416091#gid=1121416091).
+in from the [Google Sheet "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit)
+(the consent column is there - there's no separate "Consent" tab).
 Every analysis script that aggregates across users (01b, 01c, 02, and the
 typology / per-user-arc scripts that come later) automatically filters to
 opt-in users when this file exists.
