@@ -24,6 +24,8 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Iterable
 
+from src.inventory import is_subagent_path, user_dir_from_path
+
 
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
 MANUSCRIPT_RE = re.compile(
@@ -36,6 +38,8 @@ MANUSCRIPT_RE = re.compile(
 class SessionOutcome:
     file: str
     session_id: str = ""
+    user_dir: str = ""
+    is_subagent: bool = False
     files_written: Counter = field(default_factory=Counter)
     n_files_written: int = 0
     total_write_chars: int = 0
@@ -144,6 +148,8 @@ def outcome_for_session(path: Path) -> SessionOutcome:
     o.n_files_written = len(o.files_written)
     o.last_user_text = _oneline(last_user)
     o.last_assistant_text = _oneline(last_assistant)
+    o.user_dir = user_dir_from_path(path)
+    o.is_subagent = is_subagent_path(path)
     return o
 
 
