@@ -6,19 +6,19 @@ GTD project: `~/gtd/projects/lbl-related/beril-hackathon-trace-analysis/`
 
 ## What this is
 
-Qualitative ("vibe") analysis of the Claude Code reasoning traces collected during the **5/7/2026 KBase / BERIL Co-Scientist Paper Challenge hackathon**. Companion to the formal evaluation Param / Chris / Elisha are running on the KBase Lakehouse evaluation tenant. Goal: a sense of *how participants used the agent* - patterns, failure modes, prompting style effects, how much of a paper actually got written.
+Qualitative ("vibe") analysis of the Claude Code reasoning traces collected during the **5/7/2026 KBase / BERIL Co-Scientist Paper Challenge hackathon**. Companion to the formal evaluation the KBase team is running on the KBase Lakehouse evaluation tenant. Goal: a sense of *how participants used the agent* - patterns, failure modes, prompting style effects, how much of a paper actually got written.
 
 ## Source data
 
 | What | Where |
 |---|---|
-| Raw participant traces | BERDL hub `/global_share/gazimahmud/claudefiles.zip` |
+| Raw participant traces | BERDL hub `/global_share/<team-member>/claudefiles.zip` |
 | Consent tracking | [Google Sheet, "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit) - has a consent column. (There is NO tab called "Consent" - the invite list is the source of truth.) |
 | Zoom recording / chat / transcript | [Drive folder](https://drive.google.com/drive/folders/1x5yI3orSlHwRqYvsIl2UbOQV6FOE0Tzx) |
-| Chris's prototype trace browser | `~/gtd/tmp/beril-traces/bw.html` |
-| KBase Lakehouse evaluation tenant | (Elisha set up; you were being added 5/11) |
+| Prototype trace browser (built by a team member) | `~/gtd/tmp/beril-traces/bw.html` |
+| KBase Lakehouse evaluation tenant | (set up by KBase team) |
 
-**Consent filter before doing anything that leaves this machine:** Ben opted out, Nik Chia did not reply (excluded). Chris H + Ranjan opted in. KBase + BERIL team members are in but not part of the public summary.
+**Consent filter before doing anything that leaves this machine:** Respect the per-participant decisions recorded on the Invite list (opt_in / opt_out / no_reply / team). Every aggregation script drops sessions from non-opt-in users by default; see `src/consent.py`. KBase + BERIL team members are tracked but excluded from public outputs.
 
 ## How to pull the data
 
@@ -26,7 +26,7 @@ You'll need ssh access to the BERDL hub. Once in:
 
 ```bash
 # from BERDL hub, e.g.
-scp /global_share/gazimahmud/claudefiles.zip <local>:~/PythonProject/beril_hackathon_reasoning_trace_vibe_analysis/data/
+scp /global_share/<team-member>/claudefiles.zip <local>:~/PythonProject/beril_hackathon_reasoning_trace_vibe_analysis/data/
 
 # locally
 cd ~/PythonProject/beril_hackathon_reasoning_trace_vibe_analysis
@@ -57,8 +57,8 @@ python3 scripts/00_bootstrap_consent.py data/claudefiles/
 # Then: open data/consent.csv and fill in display_name + consent for each
 # row. Consent values: opt_in | opt_out | no_reply | team
 #   - opt_in    -> included in all analyses
-#   - opt_out   -> excluded everywhere (e.g. Ben)
-#   - no_reply  -> excluded everywhere (e.g. Nik Chia)
+#   - opt_out   -> excluded everywhere
+#   - no_reply  -> excluded everywhere
 #   - team      -> KBase/BERIL team; excluded by default, opt back in
 #                  for internal-only analyses with --include-team
 ```
@@ -111,7 +111,7 @@ This is the actual "vibe" part. It's slow but it's the only way to know what cat
 ```bash
 mkdir -p notes/03_narratives
 # pick 5 sessions from notes/02_outcomes_to_label.csv based on label distribution
-# read each via Chris's bw.html viewer or by directly reading the .jsonl
+# read each via the bw.html viewer or by directly reading the .jsonl
 ```
 
 ### Step 4 - Extract a coding scheme from those 5
@@ -129,7 +129,7 @@ Lock the final list into `notes/04_coding_scheme.md` and a small CSV template in
 
 ### Step 5 - Code the rest against the scheme (~5 min/session)
 
-Skim, don't deep-read. Fill in `notes/04_codes.csv` for every consenting session. Param's formal analysis will be doing the structured stuff; you're filling in the qualitative texture they can't easily quantify.
+Skim, don't deep-read. Fill in `notes/04_codes.csv` for every consenting session. The KBase team's formal analysis will be doing the structured stuff; you're filling in the qualitative texture they can't easily quantify.
 
 ### Step 6 - Failure-mode pass
 
@@ -145,11 +145,11 @@ Now you have ground truth and a coding sheet, so failure modes get tagged in con
 
 Write into `notes/05_failure_modes.md` with one section per pattern, each section listing the session_ids where you saw it.
 
-**Why failure modes come last, not first:** failure-mode-first biases the read - you find what you go looking for. Doing inventory → outcomes → narrative → coding *first* keeps the analysis honest and gives you something to compare against Param's run.
+**Why failure modes come last, not first:** failure-mode-first biases the read - you find what you go looking for. Doing inventory → outcomes → narrative → coding *first* keeps the analysis honest and gives you something to compare against the formal run.
 
 ## Coordination
 
-- Param's formal analysis is happening in the KBase Lakehouse evaluation tenant. Don't duplicate quantitative work - check with Param on what they're already extracting (turn counts, tool counts, etc., are likely covered).
+- The KBase team's formal analysis is happening in the KBase Lakehouse evaluation tenant. Don't duplicate quantitative work - check with the team on what they're already extracting (turn counts, tool counts, etc., are likely covered).
 - Your value-add is the qualitative texture: narratives in step 3, coding scheme in step 4, failure-mode patterns in step 6.
 - Cross-reference the Zoom transcript when a trace is confusing - participants said things out loud they didn't type into the agent.
 - Keep `notes/` markdown-friendly so we can publish a writeup as-is.
@@ -161,7 +161,7 @@ Write into `notes/05_failure_modes.md` with one section per pattern, each sectio
 - `notes/03_narratives/*.md` - 5 stratified deep-reads
 - `notes/04_coding_scheme.md` + `notes/04_codes.csv` - dimensions + per-session codes
 - `notes/05_failure_modes.md` - one section per pattern
-- `notes/99_writeup.md` - short writeup for Param/Chris/Elisha; potentially a section in the OpenScientist Sage talk (Jul 28 - see `~/gtd/projects/openscientist/sage-elite-talk-jul-2026/`)
+- `notes/99_writeup.md` - short writeup for the KBase team; potentially a section in a follow-on talk
 
 ## Repo layout
 
@@ -171,7 +171,7 @@ scripts/     01_inventory.py, 02_outcome_labels.py - CLI runners
 notes/       all output goes here (CSVs, narratives, coding, writeup)
 notebooks/   Jupyter for ad-hoc exploration if needed
 data/        raw traces (gitignored)
-viewer/      Chris's bw.html or other viewers
+viewer/      bw.html or other viewers
 ```
 
 ## Status (5/18/2026)

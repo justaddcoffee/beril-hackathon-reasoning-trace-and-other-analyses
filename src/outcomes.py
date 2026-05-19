@@ -3,7 +3,7 @@ decide: did this user end up with `nothing`, a `partial`, or `something real`
 by the end of the hackathon?
 
 We don't try to auto-label. Auto-labeling "did they write a paper" from traces
-is unreliable. Instead: extract enough context per session that a human (Justin)
+is unreliable. Instead: extract enough context per session that a human
 can scan a CSV and assign labels in ~30 sec/session.
 
 Per session we collect:
