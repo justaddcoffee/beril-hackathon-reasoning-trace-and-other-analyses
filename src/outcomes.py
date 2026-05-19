@@ -24,7 +24,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Iterable
 
-from src.inventory import is_subagent_path, user_dir_from_path
+from src.inventory import is_history_path, is_subagent_path, user_dir_from_path
 
 
 WRITE_TOOLS = {"Write", "Edit", "MultiEdit", "NotebookEdit"}
@@ -153,9 +153,15 @@ def outcome_for_session(path: Path) -> SessionOutcome:
     return o
 
 
-def outcomes_dir(root: Path | str, glob: str = "**/*.jsonl") -> list[SessionOutcome]:
+def outcomes_dir(root: Path | str, glob: str = "**/*.jsonl",
+                 include_history: bool = False) -> list[SessionOutcome]:
+    """Walk a trace tree and return one SessionOutcome per .jsonl. By default
+    history.jsonl files are skipped (see src/inventory.is_history_path)."""
     root = Path(root)
-    return [outcome_for_session(p) for p in sorted(root.glob(glob))]
+    paths = sorted(Path(root).glob(glob))
+    if not include_history:
+        paths = [p for p in paths if not is_history_path(p)]
+    return [outcome_for_session(p) for p in paths]
 
 
 def to_records(outcomes: Iterable[SessionOutcome]) -> list[dict]:
