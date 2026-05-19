@@ -6,7 +6,7 @@ GTD project: `~/gtd/projects/lbl-related/beril-hackathon-trace-analysis/`
 
 ## What this is
 
-Qualitative ("vibe") analysis of the Claude Code reasoning traces collected during the **5/7/2026 KBase / BERIL Co-Scientist Paper Challenge hackathon**. Companion to the formal evaluation the KBase team are running on the KBase Lakehouse evaluation tenant. Goal: a sense of *how participants used the agent* - patterns, failure modes, prompting style effects, how much of a paper actually got written.
+Qualitative ("vibe") analysis of the Claude Code reasoning traces collected during the **5/7/2026 KBase / BERIL Co-Scientist Paper Challenge hackathon**. Companion to the formal evaluation the KBase team is running on the KBase Lakehouse evaluation tenant. Goal: a sense of *how participants used the agent* - patterns, failure modes, prompting style effects, how much of a paper actually got written.
 
 ## Source data
 
@@ -15,10 +15,10 @@ Qualitative ("vibe") analysis of the Claude Code reasoning traces collected duri
 | Raw participant traces | BERDL hub `/global_share/<team-member>/claudefiles.zip` |
 | Consent tracking | [Google Sheet, "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit) - has a consent column. (There is NO tab called "Consent" - the invite list is the source of truth.) |
 | Zoom recording / chat / transcript | [Drive folder](https://drive.google.com/drive/folders/1x5yI3orSlHwRqYvsIl2UbOQV6FOE0Tzx) |
-| Prototype trace browser | `~/gtd/tmp/beril-traces/bw.html` |
-| KBase Lakehouse evaluation tenant | (set up by the KBase team) |
+| Prototype trace browser (built by a team member) | `~/gtd/tmp/beril-traces/bw.html` |
+| KBase Lakehouse evaluation tenant | (set up by KBase team) |
 
-**Consent filter before doing anything that leaves this machine:** Per-participant consent decisions live on the Invite list. KBase + BERIL team members are in but not part of the public summary.
+**Consent filter before doing anything that leaves this machine:** Respect the per-participant decisions recorded on the Invite list (opt_in / opt_out / no_reply / team). Every aggregation script drops sessions from non-opt-in users by default; see `src/consent.py`. KBase + BERIL team members are tracked but excluded from public outputs.
 
 ## How to pull the data
 
@@ -129,7 +129,7 @@ Lock the final list into `notes/04_coding_scheme.md` and a small CSV template in
 
 ### Step 5 - Code the rest against the scheme (~5 min/session)
 
-Skim, don't deep-read. Fill in `notes/04_codes.csv` for every consenting session. the formal analysis will be doing the structured stuff; you're filling in the qualitative texture they can't easily quantify.
+Skim, don't deep-read. Fill in `notes/04_codes.csv` for every consenting session. The KBase team's formal analysis will be doing the structured stuff; you're filling in the qualitative texture they can't easily quantify.
 
 ### Step 6 - Failure-mode pass
 
@@ -149,7 +149,7 @@ Write into `notes/05_failure_modes.md` with one section per pattern, each sectio
 
 ## Coordination
 
-- the formal analysis is happening in the KBase Lakehouse evaluation tenant. Don't duplicate quantitative work - check with the team on what they're already extracting (turn counts, tool counts, etc., are likely covered).
+- The KBase team's formal analysis is happening in the KBase Lakehouse evaluation tenant. Don't duplicate quantitative work - check with the team on what they're already extracting (turn counts, tool counts, etc., are likely covered).
 - Your value-add is the qualitative texture: narratives in step 3, coding scheme in step 4, failure-mode patterns in step 6.
 - Cross-reference the Zoom transcript when a trace is confusing - participants said things out loud they didn't type into the agent.
 - Keep `notes/` markdown-friendly so we can publish a writeup as-is.
@@ -161,7 +161,7 @@ Write into `notes/05_failure_modes.md` with one section per pattern, each sectio
 - `notes/03_narratives/*.md` - 5 stratified deep-reads
 - `notes/04_coding_scheme.md` + `notes/04_codes.csv` - dimensions + per-session codes
 - `notes/05_failure_modes.md` - one section per pattern
-- `notes/99_writeup.md` - short writeup for Param/Chris/Elisha; potentially a section in the OpenScientist Sage talk (Jul 28 - see `~/gtd/projects/openscientist/sage-elite-talk-jul-2026/`)
+- `notes/99_writeup.md` - short writeup for the KBase team; potentially a section in a follow-on talk
 
 ## Repo layout
 
