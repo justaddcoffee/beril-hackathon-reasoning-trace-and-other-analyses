@@ -1,4 +1,8 @@
 data/
+# Consent table - names + per-person decisions. Lives under data/ (already
+# gitignored), but called out explicitly so it's obvious this file must
+# never be committed even if the data/ rule changes.
+data/consent.csv
 *.zip
 .ipynb_checkpoints/
 __pycache__/

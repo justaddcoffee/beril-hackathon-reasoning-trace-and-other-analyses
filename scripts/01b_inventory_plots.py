@@ -37,9 +37,11 @@ import matplotlib.pyplot as plt  # noqa: E402
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from src.consent import filter_sessions  # noqa: E402
 from src.inventory import inventory_dir  # noqa: E402
 
 FIGDIR = REPO / "notes" / "figures"
+DEFAULT_CONSENT = REPO / "data" / "consent.csv"
 
 
 def logx_hist(ax, values, title, xlabel, bins=42, color="#2563eb"):
@@ -90,6 +92,18 @@ def main() -> int:
              "so the committed figure is safe for a public repo before the "
              "consent filter is applied.",
     )
+    parser.add_argument(
+        "--consent", type=Path, default=DEFAULT_CONSENT,
+        help=f"path to consent.csv (default: {DEFAULT_CONSENT.relative_to(REPO)}). "
+             f"If the file exists, sessions from non-opt-in users are dropped. "
+             f"If missing, a warning is emitted and analysis runs unfiltered "
+             f"(for bootstrap only; do not publish).",
+    )
+    parser.add_argument(
+        "--no-consent-filter", action="store_true",
+        help="explicitly skip the consent filter even if consent.csv exists. "
+             "Internal-only outputs.",
+    )
     args = parser.parse_args()
     root = args.root.expanduser()
     if not root.exists():
@@ -102,6 +116,20 @@ def main() -> int:
     n_sub = len(sessions) - len(main_s)
     if not main_s:
         sys.exit("no main sessions (is_subagent all True?)")
+
+    # Consent filter. Strict=False so first-time bootstrap (no consent.csv
+    # yet) still produces figures, but with a loud stderr warning. Once the
+    # human has filled in the CSV, subsequent runs filter automatically.
+    if not args.no_consent_filter:
+        n_before = len(main_s)
+        main_s = filter_sessions(main_s, args.consent, strict=False)
+        if len(main_s) != n_before:
+            print(f"consent filter: {len(main_s)}/{n_before} sessions kept "
+                  f"({n_before - len(main_s)} dropped)")
+    if not main_s:
+        sys.exit("0 sessions left after filtering - refusing to write empty "
+                 "figures. Fill in data/consent.csv (set consent=opt_in for "
+                 "consenting users) or pass --no-consent-filter.")
 
     FIGDIR.mkdir(parents=True, exist_ok=True)
 
