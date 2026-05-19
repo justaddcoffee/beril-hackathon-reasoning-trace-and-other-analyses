@@ -21,6 +21,7 @@ consistent with the other scripts in this repo.
 
 from __future__ import annotations
 
+import argparse
 import sys
 from collections import Counter
 from pathlib import Path
@@ -35,18 +36,25 @@ from matplotlib.gridspec import GridSpec  # noqa: E402
 REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
+from src.consent import filter_sessions  # noqa: E402
 from src.inventory import inventory_dir  # noqa: E402
 
 FIGDIR = REPO / "notes" / "figures"
+DEFAULT_CONSENT = REPO / "data" / "consent.csv"
 TOP_K = 12               # tools shown as matrix rows
 TOP_N_INTERSECTIONS = 30  # tool combinations shown as columns
 
 
 def main() -> int:
-    if len(sys.argv) < 2:
-        print(__doc__)
-        return 2
-    root = Path(sys.argv[1]).expanduser()
+    p = argparse.ArgumentParser(description=__doc__,
+                                formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("root", type=Path, help="path to claudefiles trace directory")
+    p.add_argument("--consent", type=Path, default=DEFAULT_CONSENT,
+                   help=f"path to consent.csv (default: {DEFAULT_CONSENT.relative_to(REPO)})")
+    p.add_argument("--no-consent-filter", action="store_true",
+                   help="skip consent filter even if consent.csv exists")
+    args = p.parse_args()
+    root = args.root.expanduser()
     if not root.exists():
         sys.exit(f"not found: {root}")
 
@@ -54,6 +62,16 @@ def main() -> int:
     main_s = [s for s in sessions if not s.is_subagent]
     if not main_s:
         sys.exit("no main sessions")
+
+    if not args.no_consent_filter:
+        n_before = len(main_s)
+        main_s = filter_sessions(main_s, args.consent, strict=False)
+        if len(main_s) != n_before:
+            print(f"consent filter: {len(main_s)}/{n_before} sessions kept "
+                  f"({n_before - len(main_s)} dropped)")
+    if not main_s:
+        sys.exit("0 sessions left after filtering - refusing to write an empty "
+                 "figure. Fill in data/consent.csv or pass --no-consent-filter.")
 
     # one signature per session: the set of distinct tools it used
     sigs_all = [set(s.tools) for s in main_s]

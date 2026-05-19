@@ -13,7 +13,7 @@ Qualitative ("vibe") analysis of the Claude Code reasoning traces collected duri
 | What | Where |
 |---|---|
 | Raw participant traces | BERDL hub `/global_share/<team-member>/claudefiles.zip` |
-| Consent tracking | [Google Sheet, Consent tab gid=1121416091](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit?gid=1121416091#gid=1121416091) |
+| Consent tracking | [Google Sheet, "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit) - has a consent column. (There is NO tab called "Consent" - the invite list is the source of truth.) |
 | Zoom recording / chat / transcript | [Drive folder](https://drive.google.com/drive/folders/1x5yI3orSlHwRqYvsIl2UbOQV6FOE0Tzx) |
 | Prototype trace browser | `~/gtd/tmp/beril-traces/bw.html` |
 | KBase Lakehouse evaluation tenant | (set up by the KBase team) |
@@ -39,6 +39,33 @@ unzip data/claudefiles.zip -d data/claudefiles/
 If the zip layout is different from `~/.claude/projects/<encoded-cwd>/<session>.jsonl`, the parser still works (it walks `**/*.jsonl`), but the per-user breakdown depends on each user having their own subdirectory. If users are mixed at the top level, we'll need to reconstruct user identity from the trace metadata - flag that and re-run.
 
 ## The plan
+
+### Step 0 - Consent setup (one-time, ~10 min)
+
+Before any cross-user aggregation, generate the consent table and fill it
+in from the [Google Sheet "Invite list" tab](https://docs.google.com/spreadsheets/d/17wLZUVccD6y7Q2aNkMyV7cU1PaH5yUgNUPA6dkv2O-g/edit)
+(the consent column is there - there's no separate "Consent" tab).
+Every analysis script that aggregates across users (01b, 01c, 02, and the
+typology / per-user-arc scripts that come later) automatically filters to
+opt-in users when this file exists.
+
+```bash
+python3 scripts/00_bootstrap_consent.py data/claudefiles/
+# writes data/consent.csv (gitignored) with one row per user_dir,
+# empty display_name and consent columns.
+
+# Then: open data/consent.csv and fill in display_name + consent for each
+# row. Consent values: opt_in | opt_out | no_reply | team
+#   - opt_in    -> included in all analyses
+#   - opt_out   -> excluded everywhere
+#   - no_reply  -> excluded everywhere
+#   - team      -> KBase/BERIL team; excluded by default, opt back in
+#                  for internal-only analyses with --include-team
+```
+
+If `data/consent.csv` doesn't exist, scripts emit a loud stderr warning
+and run unfiltered (so the initial inventory pass still works). Once the
+file exists, filtering is automatic - no need to pass any flags.
 
 ### Step 1 - Inventory & shape (mechanical, ~1 hr)
 
@@ -147,7 +174,7 @@ data/        raw traces (gitignored)
 viewer/      bw.html or other viewers
 ```
 
-## Status (5/14/2026)
+## Status (5/18/2026)
 
 - [x] Repo scaffolded
 - [x] Step-1 inventory parser + runner
@@ -155,6 +182,9 @@ viewer/      bw.html or other viewers
 - [x] Smoke-tested both against local Claude Code session dirs (same JSONL format)
 - [x] Pull `claudefiles.zip` from BERDL (it's a gzipped tar, not a zip - 2291 jsonl, 80 users)
 - [x] Step 1 on BERIL data -> `notes/01_inventory.csv`
+- [x] Consent plumbing (`src/consent.py`, `scripts/00_bootstrap_consent.py`, wired into 01b/01c/02)
+- [ ] Fill in `data/consent.csv` from the Google Sheet
+- [ ] Re-run 01b/01c/02 with consent filter applied
 - [ ] Step 2 labeling (`notes/02_outcomes_to_label.csv` generated; `label` column still empty)
 - [ ] Step 3 narratives
 - [ ] Step 4 coding scheme
