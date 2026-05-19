@@ -115,6 +115,19 @@ def is_history_path(path: Path) -> bool:
     return path.name == "history.jsonl"
 
 
+def parent_session_id_from_subagent_path(path: Path) -> str | None:
+    """For a subagent trace at .../<parent-uuid>/subagents/agent-<id>.jsonl,
+    return the parent session UUID. Returns None for paths that aren't in
+    the subagent layout."""
+    parts = path.parts
+    if "subagents" not in parts:
+        return None
+    i = parts.index("subagents")
+    if i == 0:
+        return None
+    return parts[i - 1]
+
+
 def inventory_session(path: Path) -> SessionStats:
     s = SessionStats(file=str(path))
     first_user_ts: datetime | None = None
