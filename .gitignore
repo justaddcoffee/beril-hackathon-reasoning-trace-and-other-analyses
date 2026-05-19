@@ -17,4 +17,5 @@ __pycache__/
 # filter is applied (Ben opted out, Nik Chia did not reply). Sanitized
 # outputs (notes/99_writeup.md, etc.) can be published.
 notes/01_inventory.csv
+notes/01d_first_prompts.csv
 notes/02_outcomes_to_label.csv
