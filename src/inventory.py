@@ -106,6 +106,15 @@ def is_subagent_path(path: Path) -> bool:
     return "subagents" in path.parts or path.name.startswith("agent-")
 
 
+def is_history_path(path: Path) -> bool:
+    """history.jsonl is Claude Code's shell-history file, one per user dir.
+    It carries no conversation turns and is not a session. It must not be
+    counted in any session-level distribution: it inflates the denominator,
+    contributes spurious zero-tool / empty-typology rows, and biases all
+    aggregate stats. Every consenting user has exactly one of these."""
+    return path.name == "history.jsonl"
+
+
 def inventory_session(path: Path) -> SessionStats:
     s = SessionStats(file=str(path))
     first_user_ts: datetime | None = None
@@ -174,9 +183,18 @@ def inventory_session(path: Path) -> SessionStats:
     return s
 
 
-def inventory_dir(root: Path | str, glob: str = "**/*.jsonl") -> list[SessionStats]:
+def inventory_dir(root: Path | str, glob: str = "**/*.jsonl",
+                  include_history: bool = False) -> list[SessionStats]:
+    """Walk a trace tree and return one SessionStats per .jsonl. By default,
+    Claude Code's `history.jsonl` files are skipped - they're shell-history
+    artifacts, not conversation sessions, and counting them contaminates
+    every session-level metric. Pass include_history=True if you specifically
+    want to inspect those files (e.g., for an audit pass)."""
     root = Path(root)
-    return [inventory_session(p) for p in sorted(root.glob(glob))]
+    paths = sorted(root.glob(glob))
+    if not include_history:
+        paths = [p for p in paths if not is_history_path(p)]
+    return [inventory_session(p) for p in paths]
 
 
 def to_records(sessions: Iterable[SessionStats]) -> list[dict]:
