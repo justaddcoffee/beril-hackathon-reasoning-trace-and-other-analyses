@@ -39,7 +39,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO))
 
 from src.consent import filter_sessions  # noqa: E402
-from src.inventory import is_subagent_path, user_dir_from_path  # noqa: E402
+from src.inventory import is_history_path, is_subagent_path, user_dir_from_path  # noqa: E402
 from src.typology import CATEGORIES, first_prompt_of  # noqa: E402
 
 DEFAULT_CONSENT = REPO / "data" / "consent.csv"
@@ -81,7 +81,7 @@ def main() -> int:
 
     rows: list[_Row] = []
     for path in sorted(root.glob("**/*.jsonl")):
-        if is_subagent_path(path):
+        if is_subagent_path(path) or is_history_path(path):
             continue
         rows.append(_Row(
             info=first_prompt_of(path),
