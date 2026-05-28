@@ -1,5 +1,24 @@
 # Phylogenomic distribution and cassette-completeness of the lanthanide-dependent methanol/ethanol oxidation system
 
+## Bottom line
+
+*Added 2026-05-28 after comparing this no-lakehouse run against the original in-lakehouse BERIL run. Everything below this section is the original no-lakehouse report, written by an agent that had no access to the lakehouse or to the in-lakehouse results. See `REPORT_COMPARISON.md` for the full head-to-head.*
+
+**Does the BERDL data lakehouse (plus the BERIL skills) help? Yes — decisively.** The same scientific question was run two ways: once inside the lakehouse against 293K genomes, and once here with the lakehouse removed but full public-web access allowed (papers, KEGG, UniProt, GTDB). The lakehouse is what turns this from a literature opinion into a measured result.
+
+| Hypothesis | In-lakehouse BERIL run (293K genomes) | This no-lakehouse ablation (public web only) |
+|---|---|---|
+| **H1** — xoxF ≥10× more common than mxaF | **Supported (strongly).** xoxF:mxaF = **18.9:1**, p=7.6×10⁻²²; phylogeny-corrected ~143:1. | **Not supported at the ≥10× bar.** Public data give only **~2–6:1**. The *direction* (xoxF > mxaF) is confirmed; the *magnitude* is not. |
+| **H2** — cassette enriched in REE/mineral environments | **Partially supported — but NOT as predicted.** The real enrichment is in **soil/sediment (OR=1.92)** and marine; the *expected* REE/volcanic/mining sites were **not** significant (volcanic OR=0.86, mining OR=1.12 ns, REE-impacted underpowered). Host-associated strongly depleted (OR=0.058). | **Cannot determine.** Only one-sided anecdotes; no denominators, no controls, no odds ratios. Would likely have concluded "enriched in REE/volcanic sites" — i.e. **backwards**. |
+| **H3a** — lanmodulin clade-restricted | **Supported (strongly).** Lanmodulin in **62/62 = 100%** of genomes within three α-proteobacterial methylotroph families, p=9.8×10⁻⁷. | **Direction only.** Lanmodulin is α-proteobacterial, but the exact three-family boundary could not be quantified (public surveys extend it). |
+| **H3b** — lanmodulin co-occurs with xoxF ≥80% | **Not formally supported.** Co-occurrence = **79%** (49/62), just under the 80% threshold. | **Cannot compute.** The agent *guessed* ~90% — the wrong side of the true 79%. |
+
+**The takeaway:** outside the lakehouse, a capable agent with the whole internet could recover the qualitative *direction* of H1 and H3a, but could not produce a single effect size, denominator, or phylogenetically-controlled statistic for *any* hypothesis — and would have gotten H2 exactly backwards (anecdotes point to REE/volcanic; the genome-scale test shows the real signal is mundane soil). Every headline number that makes this a paper (18.9:1, OR=1.92, 100%, 79%) is lakehouse-only. The failure outside was *graceful* (the agent admitted what it couldn't compute rather than fabricating), but the job still cannot be done without the curated, genome-scale data.
+
+**One caveat the ablation surfaced (and that strengthens the case for careful curation):** the in-lakehouse xoxF marker is KEGG **K00114**, which is officially `exaA` (a broad cytochrome-c alcohol dehydrogenase, EC 1.1.2.8), *not* the canonical xoxF ortholog **K23995** (EC 1.1.2.10). The 18.9:1 ratio should be re-checked inside the lakehouse with the tighter K23995 definition. The lakehouse is load-bearing — and only as good as its marker definitions.
+
+---
+
 **No-lakehouse arm.** This report was produced WITHOUT access to the BERDL data lakehouse, K-BERDL, KBase, or any pre-computed pangenome annotation matrix. It relies only on (a) my own domain knowledge and (b) public databases and literature I queried live (KEGG REST API, UniProt REST API, and published peer-reviewed surveys). No "BERIL", "observatory", "Discovery Forge", or "lanthanide methylotrophy atlas" analysis was consulted.
 
 **Author:** AI co-scientist
